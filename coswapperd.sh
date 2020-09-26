@@ -5,7 +5,8 @@
 
 # Copyright (C) 2020 Sleeping Coconut https://sleepingcoconut.com
 
-#----------VARIABLES----------#
+#----------VARIABLES----------
+STORAGE_NAME="IMPERIAL"
 SWAP_SIZE="524288"
 
 # Zero Clause BSD license {{{
@@ -47,11 +48,11 @@ writeS99() {
   cat > "/mnt/"$STORAGE_NAME"/asusware/etc/init.d/S99coswapperdset" <<EOF
 #!/bin/sh
 #
-#
+#----------VARIABLES----------
 STORAGE_NAME="$STORAGE_NAME"
 INTERVAL="15"
 #
-#
+#----------SCRIPT----------
 cru a coswapperd "*/"\$INTERVAL" * * * *" /mnt/"\$STORAGE_NAME"/coswapperd.sh -on
 EOF
 chmod +x /tmp/mnt/"$STORAGE_NAME"/asusware/etc/init.d/S99coswapperdset
@@ -94,20 +95,14 @@ else
   while [ "$1" != "" ]; do
     case $1 in
       -e | --enable )   log "Enabling coswapperd..." >> /tmp/syslog.log
-                        echo -n "->Please write USB storage volume name: "
-                        read STORAGE_NAME
                         enableAutoboot
                         exit 0
                         ;;
       -d | --disable )  log "Disabling coswapperd..." >> /tmp/syslog.log
-                        echo -n "->Please write USB storage volume name: "
-                        read STORAGE_NAME
                         disableAutoboot
                         exit 0
                         ;;
       -c | --clean )    log "Cleaning coswapperd and ASUSWRT autoboot..." >> /tmp/syslog.log
-                        echo -n "->Please write USB storage volume name: "
-                        read STORAGE_NAME
                         cleanAutoboot
                         exit 0
                         ;;
