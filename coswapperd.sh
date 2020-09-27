@@ -1,5 +1,6 @@
 #!/bin/sh
 #build 3
+set -u
 
 # This script will create swap.swp file in STORAGE_NAME volume for enable swap memory. 
 
@@ -8,6 +9,8 @@
 #----------VARIABLES----------
 STORAGE_NAME="IMPERIAL"
 SWAP_SIZE="524288"
+
+UPDATE_INTERVAL=15
 
 # Zero Clause BSD license {{{
 #
@@ -45,15 +48,15 @@ writeControl() {
 }
 
 writeS99() {
-  cat > "/mnt/"$STORAGE_NAME"/asusware/etc/init.d/S99coswapperdset" <<EOF
+  cat > "/tmp/mnt/"$STORAGE_NAME"/asusware/etc/init.d/S99coswapperdset" <<EOF
 #!/bin/sh
 #
 #----------VARIABLES----------
 STORAGE_NAME="$STORAGE_NAME"
-INTERVAL="15"
+INTERVAL="$UPDATE_INTERVAL"
 #
 #----------SCRIPT----------
-cru a coswapperd "*/"\$INTERVAL" * * * *" /mnt/"\$STORAGE_NAME"/coswapperd.sh -on
+cru a coswapperd "*/"\$INTERVAL" * * * *" /tmp/mnt/"\$STORAGE_NAME"/coswapperd.sh -on
 EOF
 chmod +x /tmp/mnt/"$STORAGE_NAME"/asusware/etc/init.d/S99coswapperdset
 }
@@ -73,6 +76,7 @@ cleanAutoboot() {
 }
 
 startSwap() {
+  cru a coswapperd "*/$UPDATE_INTERVAL * * * *" /tmp/mnt/"\$STORAGE_NAME"/coswapperd.sh -on
   sleep 180
   rm /tmp/mnt/"$STORAGE_NAME"/swap.swp &>/dev/null
   dd if=/dev/zero of=/tmp/mnt/"$STORAGE_NAME"/swap.swp bs=1k count="$SWAP_SIZE"
@@ -96,28 +100,28 @@ else
   while [ "$1" != "" ]; do
     case $1 in
       -e | --enable )   log "Enabling coswapperd..." >> /tmp/syslog.log
-                        enableAutoboot
+                        enableAutoboot || { log "move failed enabling"; exit 1; }
                         exit 0
                         ;;
       -d | --disable )  log "Disabling coswapperd..." >> /tmp/syslog.log
-                        disableAutoboot
+                        disableAutoboot || { log "swap failed disabling"; exit 1; }
                         exit 0
                         ;;
       -c | --clean )    log "Cleaning coswapperd and ASUSWRT autoboot..." >> /tmp/syslog.log
-                        cleanAutoboot
+                        cleanAutoboot || { log "swap failed cleaning autoboot"; exit 1; }
                         exit 0
                         ;;
       -on | --start )   if [ "$SWAP_SIZE_NOW" -eq 0 ];
                         then
                           log "Starting swap..." >> /tmp/syslog.log
-                          startSwap
+                          startSwap || { log "swap failed starting"; exit 1; }
                         else
                           log "Swap previously started" >> /tmp/syslog.log    
                         fi
                         exit 0
                         ;;
       -off | --stop )   log "Stopping swap..." >> /tmp/syslog.log
-                        stopSwap
+                        stopSwap || { log "swap failed stopping"; exit 1; }
                         exit 0
                         ;;
       * )               usage
