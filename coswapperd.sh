@@ -63,6 +63,7 @@ disableAutoboot() {
   swapoff -a
   rm /tmp/mnt/"$STORAGE_NAME"/asusware/lib/ipkg/info/coswapperdset.control &>/dev/null
   rm /tmp/mnt/"$STORAGE_NAME"/asusware/etc/init.d/S99coswapperdset &>/dev/null
+  rm /tmp/mnt/"$STORAGE_NAME"/asusware/S99coswapperdset.1 &>/dev/null
 }
 
 cleanAutoboot() {                                                                       
