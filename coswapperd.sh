@@ -76,7 +76,7 @@ cleanAutoboot() {
 }
 
 startSwap() {
-  cru a coswapperd "*/$UPDATE_INTERVAL * * * *" /tmp/mnt/"\$STORAGE_NAME"/coswapperd.sh -on
+  cru a coswapperd "*/$UPDATE_INTERVAL * * * *" /tmp/mnt/$STORAGE_NAME/coswapperd.sh -on
   sleep 180
   rm /tmp/mnt/"$STORAGE_NAME"/swap.swp &>/dev/null
   dd if=/dev/zero of=/tmp/mnt/"$STORAGE_NAME"/swap.swp bs=1k count="$SWAP_SIZE"
