@@ -56,7 +56,7 @@ STORAGE_NAME="$STORAGE_NAME"
 INTERVAL="$UPDATE_INTERVAL"
 #
 #----------SCRIPT----------
-cru a coswapperd "*/"\$INTERVAL" * * * *" /tmp/mnt/"\$STORAGE_NAME"/coswapperd.sh -on
+cru a coswapperd "*/"\$INTERVAL" * * * *" /tmp/mnt/"\$STORAGE_NAME"/coswapperd.sh -s
 EOF
 chmod +x /tmp/mnt/"$STORAGE_NAME"/asusware/etc/init.d/S99coswapperdset
 }
@@ -76,7 +76,6 @@ cleanAutoboot() {
 }
 
 startSwap() {
-  cru a coswapperd "*/$UPDATE_INTERVAL * * * *" /tmp/mnt/$STORAGE_NAME/coswapperd.sh -on
   sleep 180
   rm /tmp/mnt/"$STORAGE_NAME"/swap.swp &>/dev/null
   dd if=/dev/zero of=/tmp/mnt/"$STORAGE_NAME"/swap.swp bs=1k count="$SWAP_SIZE"
@@ -111,17 +110,13 @@ else
                         cleanAutoboot || { log "swap failed cleaning autoboot"; exit 1; }
                         exit 0
                         ;;
-      -on | --start )   if [ "$SWAP_SIZE_NOW" -eq 0 ];
+      -s | --start )   if [ "$SWAP_SIZE_NOW" -eq 0 ];
                         then
                           log "Starting swap..." >> /tmp/syslog.log
                           startSwap || { log "swap failed starting"; exit 1; }
                         else
                           log "Swap previously started" >> /tmp/syslog.log    
                         fi
-                        exit 0
-                        ;;
-      -off | --stop )   log "Stopping swap..." >> /tmp/syslog.log
-                        stopSwap || { log "swap failed stopping"; exit 1; }
                         exit 0
                         ;;
       * )               usage
