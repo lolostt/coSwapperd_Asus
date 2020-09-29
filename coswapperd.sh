@@ -27,7 +27,7 @@ UPDATE_INTERVAL=15
 log() { logger -t coswapperd -s $*; }
 
 usage() {
-  echo "usage: `basename $0` [-e | -d | -on | -off]"
+  echo "usage: `basename $0` [-e | -d | -s]"
 }
 
 enableAutoboot() {
@@ -81,13 +81,7 @@ startSwap() {
   dd if=/dev/zero of=/tmp/mnt/"$STORAGE_NAME"/swap.swp bs=1k count="$SWAP_SIZE"
   mkswap /tmp/mnt/"$STORAGE_NAME"/swap.swp                                   
   swapon /tmp/mnt/"$STORAGE_NAME"/swap.swp
-  log "Swap started" >> /tmp/syslog.log
-}
-
-stopSwap() {
-  cru d coswapperd
-  swapoff -a
-  log "You should (hard) reboot router NOW" >> /tmp/syslog.log
+  log "swap start finished" >> /tmp/syslog.log
 }
 
 #----------SCRIPT----------
@@ -98,24 +92,23 @@ if [ $# -lt 1 ]; then
 else
   while [ "$1" != "" ]; do
     case $1 in
-      -e | --enable )   log "Enabling coswapperd..." >> /tmp/syslog.log
-                        enableAutoboot || { log "move failed enabling"; exit 1; }
+      -e | --enable )   log "enabling" >> /tmp/syslog.log
+                        enableAutoboot || { log "enable failed"; exit 1; }
                         exit 0
                         ;;
-      -d | --disable )  log "Disabling coswapperd..." >> /tmp/syslog.log
-                        disableAutoboot || { log "swap failed disabling"; exit 1; }
+      -d | --disable )  log "disabling" >> /tmp/syslog.log
+                        disableAutoboot || { log "disable failed"; exit 1; }
                         exit 0
                         ;;
-      -c | --clean )    log "Cleaning coswapperd and ASUSWRT autoboot..." >> /tmp/syslog.log
-                        cleanAutoboot || { log "swap failed cleaning autoboot"; exit 1; }
+      -c | --clean )    log "cleaning ASUSWRT autoboot" >> /tmp/syslog.log
+                        cleanAutoboot || { log "failed cleaning autoboot"; exit 1; }
                         exit 0
                         ;;
-      -s | --start )   if [ "$SWAP_SIZE_NOW" -eq 0 ];
-                        then
-                          log "Starting swap..." >> /tmp/syslog.log
-                          startSwap || { log "swap failed starting"; exit 1; }
+      -s | --start )    if [ "$SWAP_SIZE_NOW" -eq 0 ]; then
+                          log "starting swap" >> /tmp/syslog.log
+                          startSwap || { log "start failed"; exit 1; }
                         else
-                          log "Swap previously started" >> /tmp/syslog.log    
+                          log "swap previously started" >> /tmp/syslog.log    
                         fi
                         exit 0
                         ;;
