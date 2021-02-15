@@ -49,7 +49,7 @@ enableAutoboot() {
 }
 
 initCheck() {
-  #Check 1: reachable mount point
+  #Check 1: reach mount point
   REACHABLE_WD="`( cd \"$STORAGE_MOUNT_POINT\" && pwd )`" &>/dev/null
   if [ "$STORAGE_MOUNT_POINT" != "$REACHABLE_WD" ]; then
     log "error during initial check. Could not reach storage mount point..." >> /tmp/syslog.log
@@ -107,32 +107,32 @@ if [ $# -lt 1 ]; then
 else
   while [ "$1" != "" ]; do
     case $1 in
-      -i | --initcheck ) log "init check" >> /tmp/syslog.log
-                        initCheck || { log "init check failed"; exit 1; }
-                        exit 0
-                        ;;
-      -e | --enable )   log "enabling" >> /tmp/syslog.log
-                        enableAutoboot || { log "enable failed"; exit 1; }
-                        exit 0
-                        ;;
-      -d | --disable )  log "disabling" >> /tmp/syslog.log
-                        disableAutoboot || { log "disable failed"; exit 1; }
-                        exit 0
-                        ;;
-      -c | --clean )    log "cleaning ASUSWRT autoboot" >> /tmp/syslog.log
-                        cleanAutoboot || { log "failed cleaning autoboot"; exit 1; }
-                        exit 0
-                        ;;
-      -s | --start )    if [ "$SWAP_SIZE_NOW" -eq 0 ]; then
-                          log "starting swap" >> /tmp/syslog.log
-                          startSwap || { log "start failed"; exit 1; }
-                        else
-                          log "swap previously started" >> /tmp/syslog.log    
-                        fi
-                        exit 0
-                        ;;
-      * )               usage
-                        exit 1
+      -i | --initcheck )  log "init check" >> /tmp/syslog.log
+                          initCheck || { log "init check failed"; exit 1; }
+                          exit 0
+                          ;;
+      -e | --enable )     log "enabling" >> /tmp/syslog.log
+                          enableAutoboot || { log "enable failed"; exit 1; }
+                          exit 0
+                          ;;
+      -d | --disable )    log "disabling" >> /tmp/syslog.log
+                          disableAutoboot || { log "disable failed"; exit 1; }
+                          exit 0
+                          ;;
+      -c | --clean )      log "cleaning ASUSWRT autoboot" >> /tmp/syslog.log
+                          cleanAutoboot || { log "failed cleaning autoboot"; exit 1; }
+                          exit 0
+                          ;;
+      -s | --start )      if [ "$SWAP_SIZE_NOW" -eq 0 ]; then
+                            log "starting swap" >> /tmp/syslog.log
+                            startSwap || { log "start failed"; exit 1; }
+                          else
+                            log "swap previously started" >> /tmp/syslog.log    
+                          fi
+                          exit 0
+                          ;;
+      * )                 usage
+                          exit 1
     esac
     shift
   done
