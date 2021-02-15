@@ -1,12 +1,12 @@
 #!/bin/sh
-#build 3
+#build 4
 set -u
 
 # This script will create swap.swp file in STORAGE_NAME volume for enable swap memory. 
 
-# Copyright (C) 2020 Sleeping Coconut https://sleepingcoconut.com
+# Copyright (C) 2021 Sleeping Coconut https://sleepingcoconut.com
 
-#----------VARIABLES----------
+#----VARIABLES--------------------------------------------------------------------------------------
 STORAGE_NAME="IMPERIAL"
 SWAP_SIZE="524288"
 
@@ -14,16 +14,18 @@ UPDATE_INTERVAL=15
 
 # Zero Clause BSD license {{{
 #
-# Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.
+# Permission to use, copy, modify, and/or distribute this software for any purpose with or without 
+# fee is hereby granted.
 #
-# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL 
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, 
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN 
-# AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS 
+# SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+# AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 # OF THIS SOFTWARE.
 # }}}
 
-#----------FUNCTIONS----------
+#----FUNCTIONS--------------------------------------------------------------------------------------
 log() { logger -t coswapperd -s $*; }
 
 usage() {
@@ -56,7 +58,7 @@ STORAGE_NAME="$STORAGE_NAME"
 INTERVAL="$UPDATE_INTERVAL"
 #
 #----------SCRIPT----------
-cru a coswapperd "*/"\$INTERVAL" * * * *" /tmp/mnt/"\$STORAGE_NAME"/coswapperd.sh -s
+cru a coswapperd "*/"\$INTERVAL" * * * *" /tmp/mnt/"\$STORAGE_NAME"/coSwapperd.sh -s
 EOF
 chmod +x /tmp/mnt/"$STORAGE_NAME"/asusware/etc/init.d/S99coswapperdset
 }
@@ -84,7 +86,7 @@ startSwap() {
   log "swap start finished" >> /tmp/syslog.log
 }
 
-#----------SCRIPT----------
+#----SCRIPT-----------------------------------------------------------------------------------------
 SWAP_SIZE_NOW=`free | head -3 | tail -1 | awk '{print $2}'`
 
 if [ $# -lt 1 ]; then
