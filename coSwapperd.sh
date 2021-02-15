@@ -7,10 +7,12 @@ set -u
 # Copyright (C) 2021 Sleeping Coconut https://sleepingcoconut.com
 
 #----VARIABLES--------------------------------------------------------------------------------------
-STORAGE_NAME="IMPERIAL"
+STORAGE_NAME="hd2tb"
 SWAP_SIZE="524288"
 
 UPDATE_INTERVAL=15
+
+STORAGE_MOUNT_POINT="/tmp/mnt/"$STORAGE_NAME""
 
 # Zero Clause BSD license {{{
 #
@@ -29,10 +31,11 @@ UPDATE_INTERVAL=15
 log() { logger -t coswapperd -s $*; }
 
 usage() {
-  echo "usage: `basename $0` [-e | -d | -s]"
+  echo "usage: `basename $0` [-i | -e | -d | -s]"
 }
 
 enableAutoboot() {
+  initCheck
   mkdir /tmp/mnt/"$STORAGE_NAME"/asusware &>/dev/null
   mkdir /tmp/mnt/"$STORAGE_NAME"/asusware/etc &>/dev/null
   mkdir /tmp/mnt/"$STORAGE_NAME"/asusware/etc/init.d &>/dev/null
@@ -43,6 +46,15 @@ enableAutoboot() {
   writeControl
   writeS99
   log "You should reboot router NOW" >> /tmp/syslog.log
+}
+
+initCheck() {
+  #Check 1: reachable mount point
+  REACHABLE_WD="`( cd \"$STORAGE_MOUNT_POINT\" && pwd )`" &>/dev/null
+  if [ "$STORAGE_MOUNT_POINT" != "$REACHABLE_WD" ]; then
+    log "error during initial check. Could not reach storage mount point..." >> /tmp/syslog.log
+    return 1
+  fi
 }
 
 writeControl() {
@@ -79,6 +91,7 @@ cleanAutoboot() {
 
 startSwap() {
   sleep 180
+  initCheck
   rm /tmp/mnt/"$STORAGE_NAME"/swap.swp &>/dev/null
   dd if=/dev/zero of=/tmp/mnt/"$STORAGE_NAME"/swap.swp bs=1k count="$SWAP_SIZE"
   mkswap /tmp/mnt/"$STORAGE_NAME"/swap.swp                                   
@@ -94,6 +107,10 @@ if [ $# -lt 1 ]; then
 else
   while [ "$1" != "" ]; do
     case $1 in
+      -i | --initcheck ) log "init check" >> /tmp/syslog.log
+                        initCheck || { log "init check failed"; exit 1; }
+                        exit 0
+                        ;;
       -e | --enable )   log "enabling" >> /tmp/syslog.log
                         enableAutoboot || { log "enable failed"; exit 1; }
                         exit 0
