@@ -48,4 +48,4 @@ You can set some variables to customize script behaviour:
 * **lolost** - [sleepingcoconut.com](https://sleepingcoconut.com/)
 
 ## License
-This project is licensed under the [Zero Clause BSD license](https://opensource.org/licenses/0BSD).
+This project is licensed under the [MIT License](https://opensource.org/license/mit).
